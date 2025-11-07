@@ -6,18 +6,18 @@ import { toast } from "sonner"
 import { useFieldArray, useForm, type Resolver } from "react-hook-form"
 
 import {
-    mockAdaptCV,
-    mockEnhanceExperience,
-    mockEnhancePhoto,
-    mockEnhanceSummary,
-    mockImportCV,
-    type MockImportResult,
+  mockAdaptCV,
+  mockEnhanceExperience,
+  mockEnhancePhoto,
+  mockEnhanceSummary,
+  mockImportCV,
+  type MockImportResult,
 } from "@/lib/ai/mock"
 import {
-    cvSchema,
-    defaultCV,
-    type CVData,
-    type ExperienceItem
+  cvSchema,
+  defaultCV,
+  type CVData,
+  type ExperienceItem
 } from "@/lib/cv"
 import { CVPreview } from "@/components/cv/cv-preview"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -57,7 +57,6 @@ export function CVBuilder() {
   const [isEnhancingSummary, setIsEnhancingSummary] = useState(false)
   const [experienceLoading, setExperienceLoading] = useState<string | null>(null)
   const [isAdapting, setIsAdapting] = useState(false)
-  const [isDownloading, setIsDownloading] = useState(false)
   const [isEnhancingPhoto, setIsEnhancingPhoto] = useState(false)
 
   const photoInputRef = useRef<HTMLInputElement | null>(null)
@@ -282,36 +281,6 @@ export function CVBuilder() {
     }
   }
 
-  const handleDownload = form.handleSubmit(async (values) => {
-    try {
-      setIsDownloading(true)
-      const response = await fetch("/api/export", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ cv: values }),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to generate PDF")
-      }
-
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      const anchor = document.createElement("a")
-      anchor.href = url
-      anchor.download = `${values.personal.fullName.replace(/\s+/g, "-")}-CV.pdf`
-      anchor.click()
-      URL.revokeObjectURL(url)
-      toast.success("PDF downloaded. Ready to send.")
-    } catch (error) {
-      toast.error("Export failed. Please try again shortly.")
-    } finally {
-      setIsDownloading(false)
-    }
-  })
-
   const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log("[Photo Upload] Event triggered", event)
     const file = event.target.files?.[0]
@@ -369,11 +338,9 @@ export function CVBuilder() {
             isImporting={isImporting}
             isEnhancingSummary={isEnhancingSummary}
             isAdapting={isAdapting}
-            isDownloading={isDownloading}
             onImportClick={() => resumeInputRef.current?.click()}
             onEnhanceSummary={handleSummaryEnhance}
             onAdapt={handleAdapt}
-            onDownload={handleDownload}
           />
         </div>
       </CardHeader>
