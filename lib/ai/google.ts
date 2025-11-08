@@ -96,7 +96,8 @@ export const enhanceSummaryWithAI = async (summary: string, context?: string) =>
     "You are a career coach polishing a professional summary.",
     context ? `Context: ${context}` : "",
     "Rewrite the summary to sound confident, results-oriented, and concise (max 3 sentences, under 75 words).",
-    "Avoid bullet points and keep the meaning consistent.",
+    "Avoid bullet points, bold text, markdown formatting, and generic introductions.",
+    "Write in plain text only. Be direct and specific.",
     `Summary: """${trimmed}"""`,
   ]
     .filter(Boolean)
@@ -130,6 +131,8 @@ export const enhanceExperienceWithAI = async (
     "- Include specific technologies/skills from the job description naturally",
     "- Focus on measurable outcomes and impact",
     "- Make it sound like this person is PERFECT for the target job",
+    "- DO NOT use bold text, markdown formatting, asterisks, or any special formatting",
+    "- Write in plain text only, no introductions or conclusions",
     "- Return ONLY the bullet points, one per line, no numbering or special characters",
   ]
     .filter(Boolean)
@@ -193,7 +196,8 @@ export const adaptCVWithAI = async (cvInput: CVData, jobDescription: string) => 
       cv.personal.summary,
       "\nMake it confident, results-oriented, and clearly demonstrate experience with the required technologies.",
       "Keep it under 80 words and 3 sentences maximum.",
-      "DO NOT use bullet points."
+      "DO NOT use bullet points, bold text, markdown formatting, asterisks, or generic introductions.",
+      "Write in plain text only. Be direct and specific about accomplishments."
     ].join("\n")
     
     summary = await generateText(enhancedSummaryPrompt) || cv.personal.summary
