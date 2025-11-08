@@ -115,12 +115,22 @@ export const enhanceExperienceWithAI = async (
   const keywords = seededKeywords.length ? seededKeywords : jobDescription ? fallbackKeywordsFrom(jobDescription) : []
 
   const prompt = [
-    "You are refreshing resume bullet points for a senior professional.",
-    jobDescription ? `Align with the following job focus: ${jobDescription}` : "",
-    `Here is the experience entry as JSON: ${JSON.stringify(experience)}`,
-    "Return between 3 and 4 bullet sentences, each under 22 words.",
-    "Each bullet must start with a strong verb, include measurable outcomes when possible, and avoid numbering or special characters.",
-    "Respond with plain text bullets separated by newline characters only.",
+    "You are a creative resume writer helping adapt a candidate's experience to match a job posting.",
+    "IMPORTANT: You must strategically rewrite the experience to emphasize relevant technologies and skills from the job description.",
+    "Feel free to:",
+    "- Replace or add technologies/frameworks mentioned in the job (e.g., change 'Java' to 'Unity' if job requires Unity)",
+    "- Emphasize skills that match the job requirements",
+    "- Make the candidate appear highly qualified for THIS specific role",
+    "- Keep the company name, role title, and dates UNCHANGED",
+    jobDescription ? `\nJob Requirements/Description:\n${jobDescription}\n` : "",
+    `Current Experience Entry:\nCompany: ${experience.company}\nRole: ${experience.role}\nCurrent Highlights: ${experience.highlights.join("; ")}\n`,
+    "\nRules:",
+    "- Return 3-5 bullet points, each under 25 words",
+    "- Start each bullet with a strong action verb",
+    "- Include specific technologies/skills from the job description naturally",
+    "- Focus on measurable outcomes and impact",
+    "- Make it sound like this person is PERFECT for the target job",
+    "- Return ONLY the bullet points, one per line, no numbering or special characters",
   ]
     .filter(Boolean)
     .join("\n")
@@ -143,9 +153,10 @@ export const enhanceExperienceWithAI = async (
 
 const suggestKeywords = async (jobDescription: string) => {
   const prompt = [
-    "Extract up to 12 core skills or themes from this job description.",
-    "Return them as a comma-separated list of short lowercase phrases without numbering or commentary.",
-    `Job description: """${jobDescription}"""`,
+    "Extract ALL technical skills, frameworks, programming languages, tools, and methodologies from this job description.",
+    "Include both hard technical skills (e.g., React, Python, AWS) and soft skills (e.g., leadership, agile).",
+    "Return them as a comma-separated list of keywords without any numbering, commentary, or extra text.",
+    `Job description:\n${jobDescription}`,
   ].join("\n")
 
   const response = await generateText(prompt)
@@ -156,27 +167,41 @@ const suggestKeywords = async (jobDescription: string) => {
       .filter((item: string): item is string => item.length > 2)
 
   const unique = dedupe(extracted)
-  return unique.length ? unique.slice(0, 12) : fallbackKeywordsFrom(jobDescription)
+  return unique.length ? unique.slice(0, 20) : fallbackKeywordsFrom(jobDescription)
 }
 
 const mergeSkills = (current: string[], additions: string[]) => {
   const normalized = additions.map(titleCase)
-  return dedupe([...current, ...normalized]).slice(0, 15)
+  // Prioritize new job-related skills over old ones
+  return dedupe([...normalized, ...current]).slice(0, 18)
 }
 
 export const adaptCVWithAI = async (cvInput: CVData, jobDescription: string) => {
   const cv = cvSchema.parse(cvInput)
 
+  // Extract all relevant keywords and technologies from job description
   const keywords = await suggestKeywords(jobDescription)
-  const summaryContext = keywords.length ? `a role prioritizing ${keywords.slice(0, 3).join(", ")}` : jobDescription
+  const summaryContext = `This is for a role requiring: ${keywords.slice(0, 5).join(", ")}. Make the summary highly targeted to show expertise in these areas.`
 
+  // Enhance summary to be laser-focused on the job
   let summary = cv.personal.summary
   try {
-    summary = await enhanceSummaryWithAI(cv.personal.summary, summaryContext)
+    const enhancedSummaryPrompt = [
+      "Rewrite this professional summary to make the candidate seem PERFECT for a job requiring these skills:",
+      keywords.slice(0, 8).join(", "),
+      "\nCurrent summary:",
+      cv.personal.summary,
+      "\nMake it confident, results-oriented, and clearly demonstrate experience with the required technologies.",
+      "Keep it under 80 words and 3 sentences maximum.",
+      "DO NOT use bullet points."
+    ].join("\n")
+    
+    summary = await generateText(enhancedSummaryPrompt) || cv.personal.summary
   } catch (error) {
     summary = cv.personal.summary
   }
 
+  // Adapt each experience entry to match the job requirements
   const experience = await Promise.all(
     cv.experience.map(async (role) => {
       try {
@@ -187,13 +212,16 @@ export const adaptCVWithAI = async (cvInput: CVData, jobDescription: string) => 
     })
   )
 
+  // Replace skills entirely with job-relevant ones (keep some original for authenticity)
+  const adaptedSkills = mergeSkills(cv.skills, keywords)
+
   return {
     ...cv,
     personal: {
       ...cv.personal,
       summary,
     },
-    skills: mergeSkills(cv.skills, keywords),
+    skills: adaptedSkills,
     experience,
   }
 }
