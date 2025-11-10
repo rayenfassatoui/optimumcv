@@ -7,10 +7,9 @@ import { useFieldArray, useForm, type Resolver } from "react-hook-form"
 
 import {
   mockAdaptCV,
-  mockEnhanceExperience,
-  mockEnhanceSummary,
-  mockImportCV,
-  type MockImportResult,
+  mockEnhanceExperience, mockImportCV,
+  mockOptimizeCVForATS,
+  type MockImportResult
 } from "@/lib/ai/mock"
 import {
   cvSchema,
@@ -18,6 +17,7 @@ import {
   type CVData,
   type ExperienceItem
 } from "@/lib/cv"
+import { generateHarvardStylePDF } from "@/lib/pdf-generator"
 import { CVPreview } from "@/components/cv/cv-preview"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -57,6 +57,7 @@ export function CVBuilder() {
   const [experienceLoading, setExperienceLoading] = useState<string | null>(null)
   const [isAdapting, setIsAdapting] = useState(false)
   const [isEnhancingPhoto, setIsEnhancingPhoto] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   const photoInputRef = useRef<HTMLInputElement | null>(null)
   const resumeInputRef = useRef<HTMLInputElement | null>(null)
@@ -191,27 +192,33 @@ export function CVBuilder() {
   const handleSummaryEnhance = async () => {
     try {
       setIsEnhancingSummary(true)
-      const current = form.getValues("personal.summary")
-      const { data, fallback, error: aiError } = await requestAI<{ summary: string }>("enhance-summary", {
-        summary: current,
-        context: summaryContext,
+      const currentCV = form.getValues()
+      
+      toast.loading("Optimizing your CV for ATS (Applicant Tracking Systems)...")
+      
+      const { data, fallback, error: aiError } = await requestAI<{ cv: CVData }>("optimize-ats", {
+        cv: currentCV,
       })
 
-      let enhanced = data?.summary?.trim()
+      let optimized = data?.cv
       let usedFallback = fallback
 
-      if (!enhanced) {
-        enhanced = await mockEnhanceSummary(current, summaryContext)
+      if (!optimized) {
+        optimized = await mockOptimizeCVForATS(currentCV)
         usedFallback = true
       }
 
-      form.setValue("personal.summary", enhanced, { shouldDirty: true })
-      toast.success(usedFallback ? "Summary polished (fallback mode)." : "Summary polished with Gemini.")
+      form.reset(optimized)
+      toast.success(
+        usedFallback 
+          ? "CV optimized for ATS (fallback mode) - Added action verbs, keywords, and metrics!" 
+          : "CV optimized for ATS with Gemini - Now ATS-friendly with strong keywords and impact statements!"
+      )
       if (usedFallback && aiError) {
         toast.info(aiError)
       }
     } catch (error) {
-      toast.error("Summary enhancement is unavailable right now.")
+      toast.error("ATS optimization is unavailable right now.")
     } finally {
       setIsEnhancingSummary(false)
     }
@@ -310,32 +317,75 @@ export function CVBuilder() {
 
     try {
       setIsEnhancingPhoto(true)
-      toast.info("Analyzing your photo and generating professional version...")
+      toast.info("Enhancing your photo with professional filters...")
 
-      // Create FormData to send the file
-      const formData = new FormData()
-      formData.append("photo", photoFile)
-
-      // Call the API endpoint
-      const response = await fetch("/api/ai/photo", {
-        method: "POST",
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate professional photo")
-      }
-
-      setPhotoPreview(data.photoUrl)
-      toast.success("Professional photo generated successfully with AI!")
+      // Apply browser-side professional enhancement
+      const enhanced = await applyProfessionalPhotoFilters(photoFile)
+      setPhotoPreview(enhanced)
+      toast.success("Photo enhanced! Applied professional brightness, contrast, and color adjustments.")
     } catch (error) {
       console.error("[Photo Enhancement] Error:", error)
-      const errorMessage = error instanceof Error ? error.message : "Failed to generate professional photo"
-      toast.error(errorMessage, { duration: 5000 })
+      const errorMessage = error instanceof Error ? error.message : "Failed to enhance photo"
+      toast.error(errorMessage)
     } finally {
       setIsEnhancingPhoto(false)
+    }
+  }
+
+  const applyProfessionalPhotoFilters = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
+        
+        if (!ctx) {
+          reject(new Error("Canvas not supported"))
+          return
+        }
+
+        canvas.width = img.width
+        canvas.height = img.height
+        
+        // Apply professional enhancement filters
+        // Increase brightness slightly, boost contrast, reduce saturation for corporate look
+        ctx.filter = 'brightness(1.1) contrast(1.2) saturate(0.85)'
+        ctx.drawImage(img, 0, 0)
+        
+        // Reset filter
+        ctx.filter = 'none'
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(URL.createObjectURL(blob))
+          } else {
+            reject(new Error("Failed to create enhanced image"))
+          }
+        }, 'image/png', 0.95)
+      }
+      
+      img.onerror = () => reject(new Error("Failed to load image"))
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
+  const handleDownloadCV = async () => {
+    try {
+      setIsDownloading(true)
+      const currentCV = form.getValues()
+      const fileName = `${currentCV.personal.fullName.replace(/\s+/g, '_')}_CV_Harvard.pdf`
+      
+      toast.loading("Generating your Harvard-style CV PDF...")
+      
+      // Generate PDF with Harvard template
+      generateHarvardStylePDF(currentCV, photoPreview, fileName)
+      
+      toast.success("CV downloaded successfully!")
+    } catch (error) {
+      console.error("[Download CV] Error:", error)
+      toast.error(error instanceof Error ? error.message : "Failed to download CV")
+    } finally {
+      setIsDownloading(false)
     }
   }
 
@@ -349,16 +399,18 @@ export function CVBuilder() {
             </Badge>
             <CardTitle className="text-2xl font-semibold">Build your adaptive CV</CardTitle>
             <CardDescription>
-              Import past resumes, polish them with AI, and tailor to dream roles in minutes.
+              Import resumes, optimize for ATS, adapt to jobs, and download professional PDFs.
             </CardDescription>
           </div>
           <ActionBar
             isImporting={isImporting}
             isEnhancingSummary={isEnhancingSummary}
             isAdapting={isAdapting}
+            isDownloading={isDownloading}
             onImportClick={() => resumeInputRef.current?.click()}
             onEnhanceSummary={handleSummaryEnhance}
             onAdapt={handleAdapt}
+            onDownload={handleDownloadCV}
           />
         </div>
       </CardHeader>

@@ -14,6 +14,7 @@ export function CVPreview({ data, photo, className }: CVPreviewProps) {
 
   return (
     <article
+      id="cv-preview-content"
       className={cn(
         "bg-white text-slate-900 dark:bg-zinc-900 dark:text-zinc-50 mx-auto w-full max-w-[840px] rounded-xl border border-primary/10 p-12 shadow-lg",
         "font-serif",

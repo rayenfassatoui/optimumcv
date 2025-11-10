@@ -155,3 +155,54 @@ export async function mockEnhancePhoto(file: File): Promise<string> {
   const url = URL.createObjectURL(enhancedBlob)
   return url
 }
+
+export async function mockOptimizeCVForATS(cv: CVData): Promise<CVData> {
+  await sleep(800)
+  
+  // ATS-friendly action verbs
+  const actionVerbs = [
+    "Achieved", "Implemented", "Led", "Developed", "Managed", "Increased", 
+    "Reduced", "Optimized", "Delivered", "Drove", "Established", "Executed",
+    "Spearheaded", "Streamlined", "Enhanced", "Generated"
+  ]
+  
+  // Optimize summary for ATS
+  const optimizedSummary = cv.personal.summary
+    ? `${cv.personal.summary.replace(/\.$/, "")}. Results-driven professional with proven track record in delivering measurable outcomes and driving organizational success through data-driven strategies.`
+    : "Results-driven professional with expertise in delivering measurable outcomes and achieving organizational goals through strategic planning and execution."
+  
+  // Optimize experience with action verbs and metrics
+  const optimizedExperience = cv.experience.map((exp) => ({
+    ...exp,
+    highlights: exp.highlights.length > 0
+      ? exp.highlights.map((highlight, index) => {
+          const verb = actionVerbs[index % actionVerbs.length]
+          const cleaned = highlight.replace(/^[-*•\s]+/, "").replace(/^\w+\s/, "")
+          return `${verb} ${cleaned}`.replace(/\s+/g, " ").trim()
+        })
+      : [`${actionVerbs[0]} key initiatives to drive business growth and operational excellence`]
+  }))
+  
+  // Add common ATS keywords to skills if not already present
+  const atsKeywords = [
+    "Project Management",
+    "Cross-functional Collaboration", 
+    "Strategic Planning",
+    "Process Improvement",
+    "Data Analysis"
+  ]
+  
+  const optimizedSkills = Array.from(
+    new Set([...cv.skills, ...atsKeywords.filter(k => !cv.skills.some(s => s.toLowerCase().includes(k.toLowerCase())))])
+  ).slice(0, 20)
+  
+  return {
+    ...cv,
+    personal: {
+      ...cv.personal,
+      summary: optimizedSummary,
+    },
+    experience: optimizedExperience,
+    skills: optimizedSkills,
+  }
+}

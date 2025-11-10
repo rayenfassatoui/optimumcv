@@ -2,11 +2,12 @@ import { NextResponse } from "next/server"
 
 import { cvSchema, experienceSchema } from "@/lib/cv"
 import {
-    adaptCVWithAI,
-    enhanceExperienceWithAI,
-    enhanceSummaryWithAI,
-    importCVWithAI,
-    isGenAIConfigured,
+  adaptCVWithAI,
+  enhanceExperienceWithAI,
+  enhanceSummaryWithAI,
+  importCVWithAI,
+  isGenAIConfigured,
+  optimizeCVForATS,
 } from "@/lib/ai/google"
 
 const json = (data: unknown, init?: ResponseInit) =>
@@ -77,6 +78,21 @@ export async function POST(request: Request) {
         } catch (error) {
           console.error("/api/ai import-cv error", error)
           return json({ error: "AI could not structure that resume yet." }, { status: 422 })
+        }
+      }
+
+      case "optimize-ats": {
+        if (!payload?.cv) {
+          return json({ error: "CV data is required for ATS optimization." }, { status: 400 })
+        }
+
+        try {
+          const cv = cvSchema.parse(payload.cv)
+          const optimized = await optimizeCVForATS(cv)
+          return json({ cv: optimized })
+        } catch (error) {
+          console.error("/api/ai optimize-ats error", error)
+          return json({ error: "Failed to optimize CV for ATS." }, { status: 422 })
         }
       }
 

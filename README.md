@@ -50,15 +50,15 @@ npm install
 GOOGLE_GENAI_API_KEY=your_gemini_api_key_here
 ```
 
-> **Note**: The professional photo feature uses Gemini's image generation:
-> - Uses `gemini-2.5-flash-image` to generate professional AI headshots
-> - Analyzes your photo and creates a completely new professional version
-> - Requires `GOOGLE_GENAI_API_KEY`
-> 
-> ⚠️ **Rate Limits**: 
-> - Free tier: 15 requests/minute, 1,500 requests/day
-> - If you hit the limit, wait 24 hours or upgrade to a paid plan
-> - Upgrade at: https://aistudio.google.com/
+> **Note**: 
+> - **CV Text Features**: Powered by Gemini AI (free tier works perfectly!)
+>   - CV import with AI parsing
+>   - Professional summary enhancement
+>   - Job description adaptation
+> - **Photo Enhancement**: Uses browser-side filters (no API needed!)
+>   - Applies professional brightness, contrast, and color adjustments
+>   - Works offline, no quota limits
+>   - Instant results
 
 4. Run the development server:
 ```bash
@@ -81,23 +81,28 @@ npm run dev
 
 ### Professional Photo Enhancement
 
-The photo enhancement feature uses Google Gemini's AI to create professional headshots:
+The photo enhancement feature uses browser-side image processing for instant results:
 
 **How it works:**
-1. Upload your photo (any casual photo works)
+1. Upload your photo (any format)
 2. Click "Enhance Photo"
-3. Gemini Vision AI analyzes your photo for professionalism
-4. Gemini Image Generation creates a new professional headshot with:
-   - Professional business attire (suit, blazer)
-   - Clean, neutral background
-   - Studio-quality lighting
-   - Professional expression
+3. Professional filters are applied instantly:
+   - Brightness boost (+10%)
+   - Contrast enhancement (+20%)
+   - Color saturation adjustment (-15% for corporate look)
+   - High-quality output
+
+**Benefits:**
+- ⚡ Instant results (no API calls)
+- 🆓 Completely free (no quota limits)
+- 🔒 Privacy-friendly (processed in your browser)
+- 💾 Works offline
 
 **Tips for best results:**
 - Use a clear, well-lit photo
 - Face should be clearly visible
-- Works with any style of photo (casual, selfie, etc.)
-- The AI analyzes and generates a completely new professional version
+- Photo will look more professional and polished
+- Works with any photo style
 
 ## 📁 Project Structure
 
@@ -126,19 +131,21 @@ optimumcv/
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `GOOGLE_GENAI_API_KEY` | Google Gemini API key for AI features including image generation | Yes |
+| `GOOGLE_GENAI_API_KEY` | Google Gemini API key for AI text features (CV import, enhancement, adaptation) | Yes |
 
-### Getting API Keys
+### Getting API Key
 
 **Google Gemini API Key:**
 1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
 2. Create a new API key
 3. Add it to your `.env` file as `GOOGLE_GENAI_API_KEY`
 
-This single API key powers all AI features:
-- CV text enhancement and adaptation
-- Photo analysis with Gemini Vision
-- Professional headshot generation with Gemini Image
+This API key powers the text AI features:
+- CV parsing and import
+- Professional summary enhancement
+- Job description adaptation
+
+Photo enhancement runs in your browser and doesn't need any API key!
 
 ## 🤝 Contributing
 
