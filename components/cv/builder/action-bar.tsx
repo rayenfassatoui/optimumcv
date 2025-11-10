@@ -66,15 +66,14 @@ export function ActionBar({
           <TooltipTrigger asChild>
             <Button 
               variant="outline" 
-              size="sm" 
+              size="icon"
               onClick={() => window.open("https://github.com/rayenfassatoui/optimumcv", "_blank")}
             >
               <Github className="size-4" />
-              Star on GitHub
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p className="text-xs">View source code and give us a ⭐</p>
+            <p className="text-xs">Star on GitHub ⭐</p>
           </TooltipContent>
         </Tooltip>
         
