@@ -190,11 +190,11 @@ export function CVBuilder() {
   }
 
   const handleSummaryEnhance = async () => {
+    const toastId = toast.loading("Optimizing your CV for ATS (Applicant Tracking Systems)...")
+    
     try {
       setIsEnhancingSummary(true)
       const currentCV = form.getValues()
-      
-      toast.loading("Optimizing your CV for ATS (Applicant Tracking Systems)...")
       
       const { data, fallback, error: aiError } = await requestAI<{ cv: CVData }>("optimize-ats", {
         cv: currentCV,
@@ -212,13 +212,14 @@ export function CVBuilder() {
       toast.success(
         usedFallback 
           ? "CV optimized for ATS (fallback mode) - Added action verbs, keywords, and metrics!" 
-          : "CV optimized for ATS with Gemini - Now ATS-friendly with strong keywords and impact statements!"
+          : "CV optimized for ATS with Gemini - Now ATS-friendly with strong keywords and impact statements!",
+        { id: toastId }
       )
       if (usedFallback && aiError) {
         toast.info(aiError)
       }
     } catch (error) {
-      toast.error("ATS optimization is unavailable right now.")
+      toast.error("ATS optimization is unavailable right now.", { id: toastId })
     } finally {
       setIsEnhancingSummary(false)
     }
@@ -370,20 +371,20 @@ export function CVBuilder() {
   }
 
   const handleDownloadCV = async () => {
+    const toastId = toast.loading("Generating your Harvard-style CV PDF...")
+    
     try {
       setIsDownloading(true)
       const currentCV = form.getValues()
       const fileName = `${currentCV.personal.fullName.replace(/\s+/g, '_')}_CV_Harvard.pdf`
       
-      toast.loading("Generating your Harvard-style CV PDF...")
-      
       // Generate PDF with Harvard template
       generateHarvardStylePDF(currentCV, photoPreview, fileName)
       
-      toast.success("CV downloaded successfully!")
+      toast.success("CV downloaded successfully!", { id: toastId })
     } catch (error) {
       console.error("[Download CV] Error:", error)
-      toast.error(error instanceof Error ? error.message : "Failed to download CV")
+      toast.error(error instanceof Error ? error.message : "Failed to download CV", { id: toastId })
     } finally {
       setIsDownloading(false)
     }
