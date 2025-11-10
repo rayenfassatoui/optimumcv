@@ -36,9 +36,16 @@ export function ActionBar({
   return (
     <TooltipProvider>
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={onImportClick} disabled={isImporting}>
-          <FileDown className={cn("size-4", isImporting && "animate-spin")} /> Import CV
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={onImportClick} disabled={isImporting}>
+              <FileDown className={cn("size-4", isImporting && "animate-spin")} /> Import CV
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p className="text-xs">Upload your existing CV/resume (PDF or text) to auto-fill all fields</p>
+          </TooltipContent>
+        </Tooltip>
         
         <Tooltip>
           <TooltipTrigger asChild>
@@ -53,10 +60,18 @@ export function ActionBar({
           </TooltipContent>
         </Tooltip>
 
-        <Button variant="outline" size="sm" onClick={onAdapt} disabled={isAdapting}>
-          <BriefcaseBusiness className={cn("size-4", isAdapting && "animate-pulse")} />
-          Adapt to Job
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={onAdapt} disabled={isAdapting}>
+              <BriefcaseBusiness className={cn("size-4", isAdapting && "animate-pulse")} />
+              Adapt to Job
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <p className="text-xs">Paste a job description to automatically tailor your CV to match the role's requirements</p>
+          </TooltipContent>
+        </Tooltip>
+        
         <Button variant="default" size="sm" onClick={onDownload} disabled={isDownloading}>
           <Download className={cn("size-4", isDownloading && "animate-bounce")} />
           Download PDF
