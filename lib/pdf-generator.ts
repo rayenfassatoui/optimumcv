@@ -107,7 +107,7 @@ export function generateHarvardStylePDF(
     try {
       const photoSize = 30;
       const photoX = pageWidth - margin - photoSize;
-      const photoY = margin - 5; // Move photo up 5mm
+      const photoY = margin - 11; // Move photo up 5mm
       pdf.addImage(photo, "JPEG", photoX, photoY, photoSize, photoSize);
     } catch (error) {
       console.warn("Could not add photo to PDF:", error);
