@@ -34,6 +34,7 @@ import { ProjectsSection } from "@/components/cv/builder/projects-section"
 import { SkillsSection } from "@/components/cv/builder/skills-section"
 import { AdaptJobModal } from "@/components/cv/builder/adapt-job-modal"
 import { MotivationLetterModal } from "@/components/cv/builder/motivation-letter-modal"
+import { PhotoCropModal } from "@/components/cv/builder/photo-crop-modal"
 
 type AIResult<TData> = {
   data?: TData
@@ -55,6 +56,8 @@ export function CVBuilder() {
   const [isDownloading, setIsDownloading] = useState(false)
   const [showAdaptJobModal, setShowAdaptJobModal] = useState(false)
   const [showMotivationLetterModal, setShowMotivationLetterModal] = useState(false)
+  const [showPhotoCropModal, setShowPhotoCropModal] = useState(false)
+  const [pendingPhotoFile, setPendingPhotoFile] = useState<File | null>(null)
 
   const photoInputRef = useRef<HTMLInputElement | null>(null)
   const resumeInputRef = useRef<HTMLInputElement | null>(null)
@@ -353,11 +356,20 @@ export function CVBuilder() {
       console.log("[Photo Upload] No file selected")
       return
     }
-    setPhotoFile(file)
-    const url = URL.createObjectURL(file)
-    console.log("[Photo Upload] Preview URL created:", url)
-    setPhotoPreview(url)
-    toast.success(`Photo uploaded: ${file.name}`)
+    // Open crop modal with the selected file
+    setPendingPhotoFile(file)
+    setShowPhotoCropModal(true)
+    // Reset input value so the same file can be selected again
+    event.target.value = ""
+  }
+
+  const handlePhotoCropSave = (croppedImageUrl: string) => {
+    setPhotoPreview(croppedImageUrl)
+    if (pendingPhotoFile) {
+      setPhotoFile(pendingPhotoFile)
+      toast.success(`Photo cropped and saved: ${pendingPhotoFile.name}`)
+    }
+    setPendingPhotoFile(null)
   }
 
   const handleResumeChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -532,6 +544,13 @@ export function CVBuilder() {
         onOpenChange={setShowMotivationLetterModal}
         onGenerate={handleGenerateMotivationLetter}
         fullName={cv.personal.fullName}
+      />
+
+      <PhotoCropModal
+        open={showPhotoCropModal}
+        onOpenChange={setShowPhotoCropModal}
+        imageFile={pendingPhotoFile}
+        onSave={handlePhotoCropSave}
       />
     </Card>
   )
