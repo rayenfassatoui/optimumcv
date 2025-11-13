@@ -51,17 +51,47 @@ export function MotivationLetterModal({
     }
   }
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     const letterContent = editedLetter || generatedLetter
-    const blob = new Blob([letterContent], { type: "text/plain" })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `${fullName.replace(/\s+/g, "_")}_Motivation_Letter.txt`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    
+    // Dynamic import to avoid SSR issues
+    const { jsPDF } = await import("jspdf")
+    
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4",
+    })
+
+    // Set font and styling
+    doc.setFont("helvetica")
+    doc.setFontSize(11)
+    
+    // Add content with proper margins and line breaks
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
+    const margin = 20
+    const maxLineWidth = pageWidth - 2 * margin
+    const lineHeight = 7
+    
+    // Split content into lines that fit the page width
+    const lines = doc.splitTextToSize(letterContent, maxLineWidth)
+    
+    let cursorY = margin
+    
+    lines.forEach((line: string) => {
+      // Check if we need a new page
+      if (cursorY + lineHeight > pageHeight - margin) {
+        doc.addPage()
+        cursorY = margin
+      }
+      
+      doc.text(line, margin, cursorY)
+      cursorY += lineHeight
+    })
+    
+    // Save the PDF
+    doc.save(`${fullName.replace(/\s+/g, "_")}_Motivation_Letter.pdf`)
   }
 
   const handleClose = () => {
