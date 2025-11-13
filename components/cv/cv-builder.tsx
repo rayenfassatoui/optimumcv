@@ -6,16 +6,16 @@ import { toast } from "sonner"
 import { useFieldArray, useForm, type Resolver } from "react-hook-form"
 
 import {
-  mockAdaptCV,
-  mockEnhanceExperience, mockImportCV,
-  mockOptimizeCVForATS,
-  type MockImportResult
+    mockAdaptCV,
+    mockEnhanceExperience, mockImportCV,
+    mockOptimizeCVForATS,
+    type MockImportResult
 } from "@/lib/ai/mock"
 import {
-  cvSchema,
-  defaultCV,
-  type CVData,
-  type ExperienceItem
+    cvSchema,
+    defaultCV,
+    type CVData,
+    type ExperienceItem
 } from "@/lib/cv"
 import { generateHarvardStylePDF } from "@/lib/pdf-generator"
 import { CVPreview } from "@/components/cv/cv-preview"

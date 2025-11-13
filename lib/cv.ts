@@ -46,6 +46,7 @@ export const cvSchema = z.object({
     location: z.string().default(""),
     website: z.string().default(""),
     linkedin: z.string().default(""),
+    photoStyle: z.enum(["square", "circle"]).default("square"),
   }),
   experience: z.array(experienceSchema).default([]),
   education: z.array(educationSchema).default([]),

@@ -49,7 +49,10 @@ export function CVPreview({ data, photo, className }: CVPreviewProps) {
             </div>
           </div>
           {photo && (
-            <Avatar className="size-16 border-2 border-slate-300 dark:border-slate-600">
+            <Avatar className={cn(
+              "size-16 border-2 border-slate-300 dark:border-slate-600",
+              personal.photoStyle === "square" && "rounded-md"
+            )}>
               <AvatarImage src={photo} alt={`${personal.fullName} portrait`} />
               <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-sm font-bold uppercase">
                 {personal.fullName

@@ -2,7 +2,7 @@
 
 import { RefObject } from "react"
 import { UseFormReturn } from "react-hook-form"
-import { ImageDown, Upload } from "lucide-react"
+import { ImageDown, Upload, Square, Circle } from "lucide-react"
 
 import { type CVData } from "@/lib/cv"
 import { cn } from "@/lib/utils"
@@ -31,7 +31,7 @@ export function PersonalSection({
   return (
     <div className="space-y-6 rounded-xl border border-border/60 bg-card/70 p-5">
       <div className="space-y-3">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <input 
             ref={photoInputRef} 
             type="file" 
@@ -67,6 +67,28 @@ export function PersonalSection({
             <ImageDown className={cn("size-4", isEnhancingPhoto && "animate-spin")} />
             Enhance Photo
           </Button>
+          
+          {/* Photo Style Toggle */}
+          <div className="ml-auto flex items-center gap-1 rounded-md border border-border/60 p-0.5">
+            <Button
+              type="button"
+              variant={form.watch("personal.photoStyle") === "square" ? "default" : "ghost"}
+              size="sm"
+              className="h-7 px-2"
+              onClick={() => form.setValue("personal.photoStyle", "square")}
+            >
+              <Square className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant={form.watch("personal.photoStyle") === "circle" ? "default" : "ghost"}
+              size="sm"
+              className="h-7 px-2"
+              onClick={() => form.setValue("personal.photoStyle", "circle")}
+            >
+              <Circle className="size-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
