@@ -41,7 +41,8 @@ export function ActionBar({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="outline" size="sm" onClick={onImportClick} disabled={isImporting}>
-              <FileDown className={cn("size-4", isImporting && "animate-spin")} /> Import CV
+              <FileDown className={cn("size-4", isImporting && "animate-spin")} />
+              <span className="hidden sm:inline ml-2">Import CV</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent>
@@ -53,7 +54,7 @@ export function ActionBar({
           <TooltipTrigger asChild>
             <Button variant="outline" size="sm" onClick={onEnhanceSummary} disabled={isEnhancingSummary}>
               <Sparkles className={cn("size-4", isEnhancingSummary && "animate-spin")} />
-              ATS Optimize
+              <span className="hidden sm:inline ml-2">ATS Optimize</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
@@ -66,7 +67,7 @@ export function ActionBar({
           <TooltipTrigger asChild>
             <Button variant="outline" size="sm" onClick={onAdaptClick} disabled={isAdapting}>
               <BriefcaseBusiness className={cn("size-4", isAdapting && "animate-pulse")} />
-              Adapt to Job
+              <span className="hidden sm:inline ml-2">Adapt to Job</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
@@ -78,7 +79,7 @@ export function ActionBar({
           <TooltipTrigger asChild>
             <Button variant="outline" size="sm" onClick={onMotivationLetterClick}>
               <Mail className="size-4" />
-              Motivation Letter
+              <span className="hidden sm:inline ml-2">Motivation Letter</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
@@ -88,7 +89,7 @@ export function ActionBar({
         
         <Button variant="default" size="sm" onClick={onDownload} disabled={isDownloading}>
           <Download className={cn("size-4", isDownloading && "animate-bounce")} />
-          Download PDF
+          <span className="hidden sm:inline ml-2">Download PDF</span>
         </Button>
         
         <Tooltip>

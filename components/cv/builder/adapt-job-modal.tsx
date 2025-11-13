@@ -41,32 +41,32 @@ export function AdaptJobModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Adapt to Job</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-sm">
             Enter the job description or title to automatically tailor your CV to match the role's requirements.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-2 sm:py-4">
           <div className="grid gap-2">
             <Label htmlFor="job-prompt">Job Description</Label>
-            <ScrollArea className="h-[300px] rounded-md border">
+            <ScrollArea className="h-[250px] sm:h-[300px] rounded-md border">
               <Textarea
                 id="job-prompt"
                 placeholder="Paste the full job description, or enter the job title and key requirements..."
                 value={jobPrompt}
                 onChange={(e) => setJobPrompt(e.target.value)}
-                className="min-h-[280px] resize-none border-0 focus-visible:ring-0 p-4"
+                className="min-h-[230px] sm:min-h-[280px] resize-none border-0 focus-visible:ring-0 p-3 sm:p-4 text-sm"
               />
             </ScrollArea>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={handleCancel}>
+        <DialogFooter className="flex-col sm:flex-row gap-2">
+          <Button variant="outline" onClick={handleCancel} className="w-full sm:w-auto">
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!jobPrompt.trim()}>
+          <Button onClick={handleSave} disabled={!jobPrompt.trim()} className="w-full sm:w-auto">
             Save
           </Button>
         </DialogFooter>

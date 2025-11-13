@@ -17,9 +17,74 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "OptimumCV — AI CV Builder",
+  title: "OptimumCV — AI-Powered Professional CV Builder",
   description:
-    "Generate, enhance, and tailor professional resumes in minutes with OptimumCV's AI-powered builder.",
+    "Build, enhance, and adapt professional CVs in minutes. Import existing resumes, collaborate with AI to polish each section, tailor content to any job description, and instantly export pixel-perfect PDFs. Generate motivation letters and optimize for ATS.",
+  keywords: [
+    "CV builder",
+    "resume builder",
+    "AI CV generator",
+    "professional resume",
+    "ATS optimization",
+    "job application",
+    "motivation letter",
+    "career tools",
+    "CV templates",
+    "resume templates",
+    "AI resume writer",
+    "curriculum vitae",
+    "job search",
+    "career development",
+  ],
+  authors: [{ name: "Rayen Fassatoui", url: "https://github.com/rayenfassatoui" }],
+  creator: "Rayen Fassatoui",
+  publisher: "OptimumCV",
+  metadataBase: new URL("https://cv.rayenft.dev"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://cv.rayenft.dev",
+    title: "OptimumCV — AI-Powered Professional CV Builder",
+    description:
+      "Build, enhance, and adapt professional CVs in minutes. Import existing resumes, collaborate with AI to polish each section, tailor content to any job description, and instantly export pixel-perfect PDFs.",
+    siteName: "OptimumCV",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "OptimumCV - AI CV Builder",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "OptimumCV — AI-Powered Professional CV Builder",
+    description:
+      "Build, enhance, and adapt professional CVs in minutes with AI-powered tools.",
+    images: ["/og-image.png"],
+    creator: "@rayenfassatoui",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest",
 }
 
 export default function RootLayout({

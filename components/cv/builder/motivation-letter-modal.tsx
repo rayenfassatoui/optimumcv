@@ -104,10 +104,10 @@ export function MotivationLetterModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[700px] max-h-[85vh]">
+      <DialogContent className="max-w-[95vw] sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Generate Motivation Letter</DialogTitle>
-          <DialogDescription>
+          <DialogTitle className="text-lg sm:text-xl">Generate Motivation Letter</DialogTitle>
+          <DialogDescription className="text-sm">
             Enter the job position or details to generate a personalized motivation letter.
           </DialogDescription>
         </DialogHeader>
@@ -120,26 +120,27 @@ export function MotivationLetterModal({
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="input" className="space-y-4 py-4">
+          <TabsContent value="input" className="space-y-4 py-2 sm:py-4">
             <div className="grid gap-2">
               <Label htmlFor="job-position">Job Position / Description</Label>
-              <ScrollArea className="h-[300px] rounded-md border">
+              <ScrollArea className="h-[250px] sm:h-[300px] rounded-md border">
                 <Textarea
                   id="job-position"
                   placeholder="Enter the job title, company name, and key details about the position..."
                   value={jobPosition}
                   onChange={(e) => setJobPosition(e.target.value)}
-                  className="min-h-[280px] resize-none border-0 focus-visible:ring-0 p-4"
+                  className="min-h-[230px] sm:min-h-[280px] resize-none border-0 focus-visible:ring-0 p-3 sm:p-4 text-sm"
                 />
               </ScrollArea>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button variant="outline" onClick={handleClose} className="w-full sm:w-auto">
                 Cancel
               </Button>
               <Button 
                 onClick={handleGenerate} 
                 disabled={!jobPosition.trim() || isGenerating}
+                className="w-full sm:w-auto"
               >
                 {isGenerating ? (
                   <>
@@ -153,34 +154,35 @@ export function MotivationLetterModal({
             </DialogFooter>
           </TabsContent>
           
-          <TabsContent value="preview" className="space-y-4 py-4">
+          <TabsContent value="preview" className="space-y-4 py-2 sm:py-4">
             <div className="grid gap-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="letter-preview">Your Motivation Letter</Label>
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <Label htmlFor="letter-preview" className="text-sm sm:text-base">Your Motivation Letter</Label>
                 <Button 
                   variant="ghost" 
                   size="sm"
                   onClick={() => setEditedLetter(generatedLetter)}
+                  className="h-8"
                 >
-                  <Edit2 className="mr-2 size-4" />
-                  Reset
+                  <Edit2 className="mr-1 sm:mr-2 size-3 sm:size-4" />
+                  <span className="text-xs sm:text-sm">Reset</span>
                 </Button>
               </div>
-              <ScrollArea className="h-[400px] rounded-md border p-4">
+              <ScrollArea className="h-[300px] sm:h-[400px] rounded-md border p-3 sm:p-4">
                 <Textarea
                   id="letter-preview"
                   value={editedLetter}
                   onChange={(e) => setEditedLetter(e.target.value)}
                   rows={20}
-                  className="min-h-[380px] resize-none border-0 focus-visible:ring-0"
+                  className="min-h-[280px] sm:min-h-[380px] resize-none border-0 focus-visible:ring-0 text-sm"
                 />
               </ScrollArea>
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={handleClose}>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <Button variant="outline" onClick={handleClose} className="w-full sm:w-auto">
                 Close
               </Button>
-              <Button onClick={handleDownload}>
+              <Button onClick={handleDownload} className="w-full sm:w-auto">
                 <Download className="mr-2 size-4" />
                 Download
               </Button>
