@@ -68,6 +68,11 @@ export const generateText = async (prompt: string): Promise<string> => {
 export const getVisionModel = (): string => VISION_MODEL
 
 /**
+ * Get the text model name
+ */
+export const getTextModel = (): string => TEXT_MODEL
+
+/**
  * Get the image generation model name
  */
 export const getImageGenModel = (): string => IMAGE_GEN_MODEL

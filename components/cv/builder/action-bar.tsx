@@ -1,6 +1,6 @@
 "use client"
 
-import { BriefcaseBusiness, Download, FileDown, Github, Mail, Sparkles } from "lucide-react"
+import { BriefcaseBusiness, Download, FileDown, Github, Mail, Sparkles, Briefcase } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { ModeToggle } from "@/components/mode-toggle"
@@ -21,6 +21,7 @@ type ActionBarProps = {
   onEnhanceSummary: () => void
   onAdaptClick: () => void
   onMotivationLetterClick: () => void
+  onInternshipClick: () => void
   onDownload: () => void
 }
 
@@ -33,6 +34,7 @@ export function ActionBar({
   onEnhanceSummary,
   onAdaptClick,
   onMotivationLetterClick,
+  onInternshipClick,
   onDownload,
 }: ActionBarProps) {
   return (
@@ -84,6 +86,18 @@ export function ActionBar({
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
             <p className="text-xs">Generate a personalized motivation letter for your job application</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={onInternshipClick}>
+              <Briefcase className="size-4" />
+              <span className="hidden sm:inline ml-2">Internship PDF</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-xs">
+            <p className="text-xs">Upload internship offer and get AI-generated subject suggestions and professional emails</p>
           </TooltipContent>
         </Tooltip>
         

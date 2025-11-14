@@ -2,13 +2,13 @@ import { NextResponse } from "next/server"
 
 import { cvSchema, experienceSchema } from "@/lib/cv"
 import {
-    adaptCVWithAI,
-    enhanceExperienceWithAI,
-    enhanceSummaryWithAI,
-    importCVWithAI,
-    isGenAIConfigured,
-    optimizeCVForATS,
-    generateMotivationLetterWithAI,
+  adaptCVWithAI,
+  enhanceExperienceWithAI,
+  enhanceSummaryWithAI,
+  importCVWithAI,
+  isGenAIConfigured,
+  optimizeCVForATS,
+  generateMotivationLetterWithAI,
 } from "@/lib/ai/google"
 
 const json = (data: unknown, init?: ResponseInit) =>
@@ -109,6 +109,42 @@ export async function POST(request: Request) {
         } catch (error) {
           console.error("/api/ai generate-motivation-letter error", error)
           return json({ error: "Failed to generate motivation letter." }, { status: 422 })
+        }
+      }
+
+      case "analyze-internship": {
+        if (!payload?.cv || typeof payload.internshipText !== "string") {
+          return json({ error: "CV data and internship text are required." }, { status: 400 })
+        }
+
+        try {
+          const cv = cvSchema.parse(payload.cv)
+          const { suggestInternshipSubjects } = await import("@/lib/ai/gemini/internship-analyzer")
+          const analysis = await suggestInternshipSubjects(payload.internshipText, cv)
+          return json(analysis)
+        } catch (error) {
+          console.error("/api/ai analyze-internship error", error)
+          return json({ error: "Failed to analyze internship document." }, { status: 422 })
+        }
+      }
+
+      case "generate-internship-emails": {
+        if (!payload?.cv || typeof payload.internshipText !== "string" || typeof payload.selectedSubject !== "string") {
+          return json({ error: "CV data, internship text, and selected subject are required." }, { status: 400 })
+        }
+
+        try {
+          const cv = cvSchema.parse(payload.cv)
+          const { generateInternshipEmails } = await import("@/lib/ai/gemini/internship-analyzer")
+          const emails = await generateInternshipEmails(
+            payload.internshipText, 
+            cv, 
+            payload.selectedSubject
+          )
+          return json(emails)
+        } catch (error) {
+          console.error("/api/ai generate-internship-emails error", error)
+          return json({ error: "Failed to generate internship emails." }, { status: 422 })
         }
       }
 

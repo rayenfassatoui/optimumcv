@@ -235,3 +235,193 @@ export const createPhotoGenerationPrompt = (): string => {
 
 Based on the original photo analysis: The person should maintain similar general features and characteristics while presenting in a completely professional corporate style.`
 }
+
+/**
+ * Generate prompt for internship subject suggestions with explanations
+ */
+export const createInternshipSubjectSuggestionsPrompt = (
+  internshipText: string,
+  cvData: CVData
+): string => {
+  const cvSummary = `
+Candidate Profile:
+- Name: ${cvData.personal.fullName}
+- Title: ${cvData.personal.title}
+- Summary: ${cvData.personal.summary}
+- Skills: ${cvData.skills.join(", ")}
+- Recent Experience: ${cvData.experience.slice(0, 2).map(exp => `${exp.role} at ${exp.company}`).join("; ")}
+- Education: ${cvData.education.slice(0, 2).map(edu => `${edu.degree} from ${edu.school}`).join("; ")}
+  `.trim()
+
+  return [
+    "You are a career advisor analyzing an internship opportunity for a candidate.",
+    "",
+    "INTERNSHIP DOCUMENT:",
+    "```",
+    internshipText,
+    "```",
+    "",
+    "CANDIDATE CV:",
+    "```",
+    cvSummary,
+    "```",
+    "",
+    "Your task is to analyze the internship and suggest ALL possible internship subjects that match the candidate's profile.",
+    "",
+    "IMPORTANT: Also extract the company contact email address from the internship document if present.",
+    "",
+    "Generate a JSON object with:",
+    "- **subjects**: Array of 1-4 suggested subjects, each with:",
+    "  - **subject**: A concise, professional internship subject/title (max 15 words)",
+    "  - **explanation**: A clear explanation (2-3 sentences) of WHY this subject fits the candidate's CV, mentioning specific skills, experience, technologies, or education that make them a good match",
+    "- **companyEmail**: The contact email address found in the internship document (or null if not found)",
+    "- **companyName**: The company name from the document (or null if not found)",
+    "",
+    "Return ONLY a valid JSON object with this exact structure:",
+    "{",
+    '  "subjects": [',
+    "    {",
+    '      "subject": "...",',
+    '      "explanation": "..."',
+    "    }",
+    "  ],",
+    '  "companyEmail": "email@company.com or null",',
+    '  "companyName": "Company Name or null"',
+    "}",
+    "",
+    "Rules:",
+    "- Suggest subjects from most relevant to least relevant",
+    "- Each explanation must be specific and reference actual items from the candidate's CV",
+    "- Be honest about the match - explain both strengths and potential growth areas",
+    "- Keep subjects professional and realistic",
+    "- Extract the EXACT email address as it appears in the document",
+    "- Return ONLY the JSON object, no other text or markdown",
+  ].join("\n")
+}
+
+/**
+ * Generate prompt for creating professional emails for a specific internship subject
+ */
+export const createInternshipEmailGenerationPrompt = (
+  internshipText: string,
+  cvData: CVData,
+  selectedSubject: string
+): string => {
+  const cvSummary = `
+Candidate Profile:
+- Name: ${cvData.personal.fullName}
+- Title: ${cvData.personal.title}
+- Summary: ${cvData.personal.summary}
+- Email: ${cvData.personal.email}
+- Phone: ${cvData.personal.phone}
+- Location: ${cvData.personal.location}
+- Skills: ${cvData.skills.join(", ")}
+- Recent Experience: ${cvData.experience.slice(0, 2).map(exp => `${exp.role} at ${exp.company}`).join("; ")}
+- Education: ${cvData.education.slice(0, 2).map(edu => `${edu.degree} from ${edu.school}`).join("; ")}
+  `.trim()
+
+  return [
+    "You are a professional email writer helping a candidate apply for an internship.",
+    "",
+    "INTERNSHIP DOCUMENT:",
+    "```",
+    internshipText,
+    "```",
+    "",
+    "CANDIDATE CV:",
+    "```",
+    cvSummary,
+    "```",
+    "",
+    `SELECTED INTERNSHIP SUBJECT: ${selectedSubject}`,
+    "",
+    "Generate TWO professional emails in JSON format:",
+    "",
+    "1. **applicantEmail**: The email the candidate will send to apply for this internship:",
+    "   - Subject line: Professional and specific to the internship",
+    "   - Body: 200-300 words",
+    "   - Format: Include 'Subject: ...' at the top, then the full email body",
+    "   - Address appropriately (use 'Dear Hiring Manager' if no specific name)",
+    "   - Introduce the candidate with enthusiasm",
+    "   - Highlight 2-3 relevant skills/experiences that match the internship",
+    "   - Express genuine interest in the role",
+    "   - Include contact information in signature",
+    "   - Professional, enthusiastic tone",
+    "",
+    "2. **companyEmail**: A template for formal company correspondence:",
+    "   - Subject line: Generic professional subject",
+    "   - Body: 150-250 words",
+    "   - Format: Include 'Subject: ...' at the top, then the full email body",
+    "   - Professional structure with greeting, body, and closing",
+    "   - Suitable for formal business communication",
+    "   - Clean, polished, and professional",
+    "",
+    "Return ONLY a valid JSON object with this exact structure:",
+    "{",
+    '  "applicantEmail": "Subject: ...\\n\\nDear ...",',
+    '  "companyEmail": "Subject: ...\\n\\nDear ..."',
+    "}",
+    "",
+    "DO NOT include markdown formatting, code blocks, or explanatory text. Return ONLY the JSON object.",
+  ].join("\n")
+}
+
+/**
+ * Generate prompt for internship analysis and email generation (DEPRECATED - kept for backwards compatibility)
+ */
+export const createInternshipAnalysisPrompt = (
+  internshipText: string,
+  cvData: CVData
+): string => {
+  const cvSummary = `
+Candidate Profile:
+- Name: ${cvData.personal.fullName}
+- Title: ${cvData.personal.title}
+- Summary: ${cvData.personal.summary}
+- Skills: ${cvData.skills.join(", ")}
+- Recent Experience: ${cvData.experience.slice(0, 2).map(exp => `${exp.role} at ${exp.company}`).join("; ")}
+- Education: ${cvData.education.slice(0, 2).map(edu => `${edu.degree} from ${edu.school}`).join("; ")}
+  `.trim()
+
+  return [
+    "You are a career advisor helping a candidate apply for an internship.",
+    "",
+    "INTERNSHIP DOCUMENT:",
+    "```",
+    internshipText,
+    "```",
+    "",
+    "CANDIDATE CV:",
+    "```",
+    cvSummary,
+    "```",
+    "",
+    "Your task is to analyze the internship offer and the candidate's CV, then generate THREE outputs in a specific JSON format:",
+    "",
+    "1. **suggestedSubject**: A concise, professional internship subject/title that matches the candidate's profile (1 sentence, max 15 words)",
+    "",
+    "2. **applicantEmail**: A professional email the candidate can send to apply for this internship. The email should:",
+    "   - Have a professional subject line",
+    "   - Be addressed appropriately (use 'Dear Hiring Manager' if no specific name)",
+    "   - Introduce the candidate and express genuine interest",
+    "   - Highlight 2-3 relevant skills/experiences that match the internship",
+    "   - Include the candidate's contact information",
+    "   - Be enthusiastic but professional",
+    "   - Be 200-300 words",
+    "",
+    "3. **companyEmail**: A clean, professional email template for company correspondence. This should:",
+    "   - Be a generic professional template suitable for formal company communication",
+    "   - Have proper structure with greeting, body, and closing",
+    "   - Be professional and polished",
+    "   - Be 150-250 words",
+    "",
+    "CRITICAL: Return ONLY a valid JSON object with exactly this structure, no other text:",
+    "{",
+    '  "suggestedSubject": "...",',
+    '  "applicantEmail": "...",',
+    '  "companyEmail": "..."',
+    "}",
+    "",
+    "DO NOT include any markdown formatting, code blocks, or explanatory text. Return ONLY the JSON object.",
+  ].join("\n")
+}
