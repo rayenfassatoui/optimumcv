@@ -6,12 +6,12 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -102,6 +102,7 @@ export function InternshipModal({
     try {
       setIsGeneratingEmails(true)
       setSelectedSubject(subject)
+      toast.info("Generating professional emails with AI...", { duration: 3000 })
       const generatedEmails = await onGenerateEmails(subject)
       setEmails(generatedEmails)
       toast.success("Professional emails generated successfully!")
@@ -153,8 +154,15 @@ export function InternshipModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] m-0 rounded-none flex flex-col p-6">
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      // Only allow closing via the Close button, not by clicking outside
+      if (!isOpen) return
+    }}>
+      <DialogContent 
+        className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] m-0 rounded-none flex flex-col p-6"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileText className="size-5" />

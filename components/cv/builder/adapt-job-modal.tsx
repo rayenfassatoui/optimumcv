@@ -40,8 +40,15 @@ export function AdaptJobModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      // Only allow closing via Cancel/Save buttons
+      if (!isOpen) return
+    }}>
+      <DialogContent 
+        className="max-w-[95vw] sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>Adapt to Job</DialogTitle>
           <DialogDescription className="text-sm">
