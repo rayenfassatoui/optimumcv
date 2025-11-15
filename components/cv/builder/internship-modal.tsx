@@ -102,9 +102,10 @@ export function InternshipModal({
     try {
       setIsGeneratingEmails(true)
       setSelectedSubject(subject)
-      toast.info("Generating professional emails with AI...", { duration: 3000 })
+      const loadingToast = toast.info("Generating professional emails with AI...", { duration: Infinity })
       const generatedEmails = await onGenerateEmails(subject)
       setEmails(generatedEmails)
+      toast.dismiss(loadingToast)
       toast.success("Professional emails generated successfully!")
     } catch (error) {
       console.error("Error generating emails:", error)
@@ -154,12 +155,9 @@ export function InternshipModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      // Only allow closing via the Close button, not by clicking outside
-      if (!isOpen) return
-    }}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent 
-        className="max-w-[100vw] w-[100vw] h-[100vh] max-h-[100vh] m-0 rounded-none flex flex-col p-6"
+        className="max-w-[95vw] sm:max-w-[700px] max-h-[90vh] overflow-y-auto flex flex-col p-6"
         onPointerDownOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >

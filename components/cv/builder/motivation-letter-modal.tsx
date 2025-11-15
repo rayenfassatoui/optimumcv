@@ -103,10 +103,7 @@ export function MotivationLetterModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      // Only allow closing via the Close button
-      if (!isOpen) return
-    }}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent 
         className="max-w-[95vw] sm:max-w-[700px] max-h-[90vh] overflow-y-auto"
         onPointerDownOutside={(e) => e.preventDefault()}
