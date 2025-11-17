@@ -1,27 +1,33 @@
-"use client"
+"use client";
 
-import { useMemo } from "react"
-import { toast } from "sonner"
-import { mockAdaptCV } from "@/lib/ai/mock"
-import type { CVData } from "@/lib/cv"
-import { CVPreview } from "@/components/cv/cv-preview"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ActionBar } from "@/components/cv/builder/action-bar"
-import { CVPreviewPanel } from "@/components/cv/builder/cv-preview-panel"
-import { CVFormSections } from "@/components/cv/builder/cv-form-sections"
-import { CVModals } from "@/components/cv/builder/cv-modals"
-import { useCVForm } from "@/hooks/use-cv-form"
-import { useAIOperations } from "@/hooks/use-ai-operations"
-import { useCVOperations } from "@/hooks/use-cv-operations"
-import { useImportOperations } from "@/hooks/use-import-operations"
-import { usePhotoManagement } from "@/hooks/use-photo-management"
-import { useModalOperations } from "@/hooks/use-modal-operations"
-import { useDownloadOperations } from "@/hooks/use-download-operations"
+import { useMemo, useEffect } from "react";
+import { toast } from "sonner";
+import { mockAdaptCV } from "@/lib/ai/mock";
+import type { CVData } from "@/lib/cv";
+import { CVPreview } from "@/components/cv/cv-preview";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ActionBar } from "@/components/cv/builder/action-bar";
+import { CVPreviewPanel } from "@/components/cv/builder/cv-preview-panel";
+import { CVFormSections } from "@/components/cv/builder/cv-form-sections";
+import { CVModals } from "@/components/cv/builder/cv-modals";
+import { useCVForm } from "@/hooks/use-cv-form";
+import { useAIOperations } from "@/hooks/use-ai-operations";
+import { useCVOperations } from "@/hooks/use-cv-operations";
+import { useImportOperations } from "@/hooks/use-import-operations";
+import { usePhotoManagement } from "@/hooks/use-photo-management";
+import { useModalOperations } from "@/hooks/use-modal-operations";
+import { useDownloadOperations } from "@/hooks/use-download-operations";
 
 export function CVBuilder() {
   // Form management
-  const { form, experience, education, projects, cv } = useCVForm()
+  const { form, experience, education, projects, cv } = useCVForm();
 
   // AI operations
   const {
@@ -32,16 +38,17 @@ export function CVBuilder() {
     isAdapting,
     setIsAdapting,
     requestAI,
-  } = useAIOperations()
+  } = useAIOperations();
 
   // CV operations
-  const { handleSummaryEnhance, handleExperienceEnhance, handleAdapt } = useCVOperations(
-    form,
-    requestAI,
-    setIsEnhancingSummary,
-    setExperienceLoading,
-    setIsAdapting,
-  )
+  const { handleSummaryEnhance, handleExperienceEnhance, handleAdapt } =
+    useCVOperations(
+      form,
+      requestAI,
+      setIsEnhancingSummary,
+      setExperienceLoading,
+      setIsAdapting
+    );
 
   // Import operations
   const {
@@ -52,7 +59,7 @@ export function CVBuilder() {
     setRawImport,
     handleImportCV,
     handleResumeChange,
-  } = useImportOperations(form, requestAI)
+  } = useImportOperations(form, requestAI);
 
   // Photo management
   const {
@@ -63,7 +70,7 @@ export function CVBuilder() {
     setShowPhotoCropModal,
     handlePhotoChange,
     handlePhotoCropSave,
-  } = usePhotoManagement()
+  } = usePhotoManagement();
 
   // Modal operations
   const {
@@ -78,81 +85,115 @@ export function CVBuilder() {
     handleGenerateMotivationLetter,
     handleAnalyzeInternship,
     handleGenerateInternshipEmails,
-  } = useModalOperations(form, requestAI)
+  } = useModalOperations(form, requestAI);
 
   // Download operations
-  const { isDownloading, handleDownloadCV } = useDownloadOperations(form, photoPreview)
+  const { isDownloading, handleDownloadCV } = useDownloadOperations(
+    form,
+    photoPreview
+  );
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      void handleDownloadCV();
+    };
+
+    if (typeof window !== "undefined") {
+      window.addEventListener("optimum-download", handler);
+    }
+
+    return () => {
+      if (typeof window !== "undefined") {
+        window.removeEventListener("optimum-download", handler);
+      }
+    };
+  }, [handleDownloadCV]);
 
   // Computed values
   const summaryContext = useMemo(() => {
     if (jobDescription.trim()) {
-      return "job description"
+      return "job description";
     }
-    return cv.personal.title
-  }, [jobDescription, cv.personal.title])
+    return cv.personal.title;
+  }, [jobDescription, cv.personal.title]);
 
-  const enhanceLabel = "AI Enhance"
+  const enhanceLabel = "AI Enhance";
 
   // Adapter for job modal save
   const handleAdaptJobModalSave = async (jobPrompt: string) => {
-    setJobDescription(jobPrompt)
-    
+    setJobDescription(jobPrompt);
+
     try {
-      setIsAdapting(true)
-      const currentCV = form.getValues()
-      const { data, fallback, error: aiError } = await requestAI<{ cv: CVData }>("adapt-cv", {
+      setIsAdapting(true);
+      const currentCV = form.getValues();
+      const {
+        data,
+        fallback,
+        error: aiError,
+      } = await requestAI<{ cv: CVData }>("adapt-cv", {
         cv: currentCV,
         jobDescription: jobPrompt,
-      })
+      });
 
-      let adapted = data?.cv
-      let usedFallback = fallback
+      let adapted = data?.cv;
+      let usedFallback = fallback;
 
       if (!adapted) {
-        adapted = await mockAdaptCV(currentCV, jobPrompt)
-        usedFallback = true
+        adapted = await mockAdaptCV(currentCV, jobPrompt);
+        usedFallback = true;
       }
 
-      form.reset(adapted)
-      toast.success(usedFallback ? "CV aligned using fallback AI." : "CV aligned with Gemini insights.")
+      form.reset(adapted);
+      toast.success(
+        usedFallback
+          ? "CV aligned using fallback AI."
+          : "CV aligned with Gemini insights."
+      );
       if (usedFallback && aiError) {
-        toast.info(aiError)
+        toast.info(aiError);
       }
     } catch (error) {
-      toast.error("Could not adapt to that job description. Please retry.")
+      toast.error("Could not adapt to that job description. Please retry.");
     } finally {
-      setIsAdapting(false)
+      setIsAdapting(false);
     }
-  }
+  };
 
   return (
     <Card className="border-border/60 bg-background/80 backdrop-blur-xl">
-      <CardHeader className="gap-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <CardHeader className="gap-0 px-0 py-0">
+        <div className="grid gap-10 lg:grid-cols-[420px_1fr] px-6 py-0">
           <div className="space-y-1">
-            <Badge variant="outline" className="border-primary/40 bg-primary/10 text-primary">
+            <Badge
+              variant="outline"
+              className="border-primary/40 bg-primary/10 text-primary"
+            >
               OptimumCV Workspace
             </Badge>
-            <CardTitle className="text-2xl font-semibold">Build your adaptive CV</CardTitle>
+            <CardTitle className="text-2xl font-semibold">
+              Build your adaptive CV
+            </CardTitle>
             <CardDescription>
-              Import resumes, optimize for ATS, adapt to jobs, and download professional PDFs.
+              Import resumes, optimize for ATS, adapt to jobs, and download
+              professional PDFs.
             </CardDescription>
           </div>
-          <ActionBar
-            isImporting={isImporting}
-            isEnhancingSummary={isEnhancingSummary}
-            isAdapting={isAdapting}
-            isDownloading={isDownloading}
-            onImportClick={() => resumeInputRef.current?.click()}
-            onEnhanceSummary={handleSummaryEnhance}
-            onAdaptClick={() => setShowAdaptJobModal(true)}
-            onMotivationLetterClick={() => setShowMotivationLetterModal(true)}
-            onInternshipClick={() => setShowInternshipModal(true)}
-            onDownload={handleDownloadCV}
-          />
+          <div className="flex items-center justify-center">
+            <ActionBar
+              isImporting={isImporting}
+              isEnhancingSummary={isEnhancingSummary}
+              isAdapting={isAdapting}
+              isDownloading={isDownloading}
+              onImportClick={() => resumeInputRef.current?.click()}
+              onEnhanceSummary={handleSummaryEnhance}
+              onAdaptClick={() => setShowAdaptJobModal(true)}
+              onMotivationLetterClick={() => setShowMotivationLetterModal(true)}
+              onInternshipClick={() => setShowInternshipModal(true)}
+            />
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-10 lg:grid-cols-[420px_1fr]">
+      <CardContent className="grid gap-10 lg:grid-cols-[420px_1fr] px-6 py-10">
         <CVFormSections
           form={form}
           experience={experience}
@@ -162,7 +203,9 @@ export function CVBuilder() {
           photoInputRef={photoInputRef}
           onPhotoChange={handlePhotoChange}
           experienceLoading={experienceLoading}
-          onExperienceEnhance={(index) => void handleExperienceEnhance(index, jobDescription)}
+          onExperienceEnhance={(index) =>
+            void handleExperienceEnhance(index, jobDescription)
+          }
           enhanceLabel={enhanceLabel}
           isImporting={isImporting}
           resumeFile={resumeFile}
@@ -200,5 +243,5 @@ export function CVBuilder() {
         onGenerateInternshipEmails={handleGenerateInternshipEmails}
       />
     </Card>
-  )
+  );
 }
