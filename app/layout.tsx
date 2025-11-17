@@ -1,20 +1,21 @@
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import "./globals.css"
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
 
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/sonner"
-import { cn } from "@/lib/utils"
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
+import { FloatingDownloadButton } from "@/components/ui/floating-download-button";
+import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-})
+});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
-})
+});
 
 export const metadata: Metadata = {
   title: "OptimumCV — AI-Powered Professional CV Builder",
@@ -36,7 +37,9 @@ export const metadata: Metadata = {
     "job search",
     "career development",
   ],
-  authors: [{ name: "Rayen Fassatoui", url: "https://github.com/rayenfassatoui" }],
+  authors: [
+    { name: "Rayen Fassatoui", url: "https://github.com/rayenfassatoui" },
+  ],
   creator: "Rayen Fassatoui",
   publisher: "OptimumCV",
   metadataBase: new URL("https://cv.rayenft.dev"),
@@ -85,7 +88,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
-}
+};
 
 export default function RootLayout({
   children,
@@ -104,7 +107,13 @@ export default function RootLayout({
       >
         <ThemeProvider>
           {children}
-          <Toaster position="top-right" richColors expand={false} closeButton />
+          <FloatingDownloadButton />
+          <Toaster
+            position="bottom-center"
+            richColors
+            expand={false}
+            closeButton
+          />
         </ThemeProvider>
       </body>
     </html>

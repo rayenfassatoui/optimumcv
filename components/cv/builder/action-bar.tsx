@@ -1,28 +1,31 @@
-"use client"
+"use client";
 
-import { BriefcaseBusiness, Download, FileDown, Mail, Sparkles, Briefcase } from "lucide-react"
+import {
+  BriefcaseBusiness, Mail,
+  Sparkles,
+  Briefcase
+} from "lucide-react";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
 
 type ActionBarProps = {
-  isImporting: boolean
-  isEnhancingSummary: boolean
-  isAdapting: boolean
-  isDownloading: boolean
-  onImportClick: () => void
-  onEnhanceSummary: () => void
-  onAdaptClick: () => void
-  onMotivationLetterClick: () => void
-  onInternshipClick: () => void
-  onDownload: () => void
-}
+  isImporting: boolean;
+  isEnhancingSummary: boolean;
+  isAdapting: boolean;
+  isDownloading: boolean;
+  onImportClick: () => void;
+  onEnhanceSummary: () => void;
+  onAdaptClick: () => void;
+  onMotivationLetterClick: () => void;
+  onInternshipClick: () => void;
+};
 
 export function ActionBar({
   isImporting,
@@ -34,57 +37,72 @@ export function ActionBar({
   onAdaptClick,
   onMotivationLetterClick,
   onInternshipClick,
-  onDownload,
 }: ActionBarProps) {
   return (
     <TooltipProvider>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" onClick={onImportClick} disabled={isImporting}>
-              <FileDown className={cn("size-4", isImporting && "animate-spin")} />
-              <span className="hidden sm:inline ml-2">Import CV</span>
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-xs">Upload your existing CV/resume (PDF or text) to auto-fill all fields</p>
-          </TooltipContent>
-        </Tooltip>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" onClick={onEnhanceSummary} disabled={isEnhancingSummary}>
-              <Sparkles className={cn("size-4", isEnhancingSummary && "animate-spin")} />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEnhanceSummary}
+              disabled={isEnhancingSummary}
+            >
+              <Sparkles
+                className={cn("size-4", isEnhancingSummary && "animate-spin")}
+              />
               <span className="hidden sm:inline ml-2">ATS Optimize</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            <p className="font-semibold mb-1">Optimize for Applicant Tracking Systems</p>
-            <p className="text-xs">Adds action verbs, keywords, metrics, and ATS-friendly formatting to help your CV pass automated screening.</p>
+            <p className="font-semibold mb-1">
+              Optimize for Applicant Tracking Systems
+            </p>
+            <p className="text-xs">
+              Adds action verbs, keywords, metrics, and ATS-friendly formatting
+              to help your CV pass automated screening.
+            </p>
           </TooltipContent>
         </Tooltip>
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" onClick={onAdaptClick} disabled={isAdapting}>
-              <BriefcaseBusiness className={cn("size-4", isAdapting && "animate-pulse")} />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onAdaptClick}
+              disabled={isAdapting}
+            >
+              <BriefcaseBusiness
+                className={cn("size-4", isAdapting && "animate-pulse")}
+              />
               <span className="hidden sm:inline ml-2">Adapt to Job</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            <p className="text-xs">Paste a job description to automatically tailor your CV to match the role's requirements</p>
+            <p className="text-xs">
+              Paste a job description to automatically tailor your CV to match
+              the role's requirements
+            </p>
           </TooltipContent>
         </Tooltip>
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" onClick={onMotivationLetterClick}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onMotivationLetterClick}
+            >
               <Mail className="size-4" />
-              <span className="hidden sm:inline ml-2">Motivation Letter</span>
+              <span className="hidden sm:inline ml-2">Cover Letter</span>
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            <p className="text-xs">Generate a personalized motivation letter for your job application</p>
+            <p className="text-xs">
+              Generate a personalized motivation letter for your job application
+            </p>
           </TooltipContent>
         </Tooltip>
 
@@ -96,15 +114,13 @@ export function ActionBar({
             </Button>
           </TooltipTrigger>
           <TooltipContent className="max-w-xs">
-            <p className="text-xs">Upload internship offer and get AI-generated subject suggestions and professional emails</p>
+            <p className="text-xs">
+              Upload internship offer and get AI-generated subject suggestions
+              and professional emails
+            </p>
           </TooltipContent>
         </Tooltip>
-        
-        <Button variant="default" size="sm" onClick={onDownload} disabled={isDownloading}>
-          <Download className={cn("size-4", isDownloading && "animate-bounce")} />
-          <span className="hidden sm:inline ml-2">Download PDF</span>
-        </Button>
       </div>
     </TooltipProvider>
-  )
+  );
 }
