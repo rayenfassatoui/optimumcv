@@ -1,15 +1,14 @@
 "use client"
 
-import { BriefcaseBusiness, Download, FileDown, Github, Mail, Sparkles, Briefcase } from "lucide-react"
+import { BriefcaseBusiness, Download, FileDown, Mail, Sparkles, Briefcase } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip"
 
 type ActionBarProps = {
@@ -105,23 +104,6 @@ export function ActionBar({
           <Download className={cn("size-4", isDownloading && "animate-bounce")} />
           <span className="hidden sm:inline ml-2">Download PDF</span>
         </Button>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant="outline" 
-              size="icon"
-              onClick={() => window.open("https://github.com/rayenfassatoui/optimumcv", "_blank")}
-            >
-              <Github className="size-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="text-xs">Star on GitHub ⭐</p>
-          </TooltipContent>
-        </Tooltip>
-        
-        <ModeToggle />
       </div>
     </TooltipProvider>
   )
