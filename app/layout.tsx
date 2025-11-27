@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { AIConfigProvider } from "@/contexts/ai-config-context";
 import { FloatingDownloadButton } from "@/components/ui/floating-download-button";
 import { cn } from "@/lib/utils";
 
@@ -106,14 +107,16 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         <ThemeProvider>
-          {children}
-          <FloatingDownloadButton />
-          <Toaster
-            position="bottom-center"
-            richColors
-            expand={false}
-            closeButton
-          />
+          <AIConfigProvider>
+            {children}
+            <FloatingDownloadButton />
+            <Toaster
+              position="bottom-center"
+              richColors
+              expand={false}
+              closeButton
+            />
+          </AIConfigProvider>
         </ThemeProvider>
       </body>
     </html>

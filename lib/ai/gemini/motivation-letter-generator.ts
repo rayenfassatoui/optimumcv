@@ -1,4 +1,5 @@
-import { generateText } from "./client"
+import { generateText } from "../client"
+import { AIConfig } from "../types"
 import type { CVData } from "@/lib/cv"
 
 /**
@@ -70,7 +71,8 @@ Generate ONLY the letter content without any markdown formatting, headers, or ex
 export const generateMotivationLetterWithAI = async (
   cv: CVData,
   jobPosition: string,
-  language: "en" | "fr" = "en"
+  language: "en" | "fr" = "en",
+  config?: AIConfig
 ): Promise<string> => {
   if (!jobPosition.trim()) {
     throw new Error("Job position is required to generate motivation letter")
@@ -79,7 +81,7 @@ export const generateMotivationLetterWithAI = async (
   const prompt = createMotivationLetterPrompt(cv, jobPosition, language)
 
   try {
-    const letter = await generateText(prompt)
+    const letter = await generateText(prompt, config)
     
     if (!letter || letter.trim().length < 100) {
       // Fallback template if AI response is too short

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { cvSchema, experienceSchema } from "@/lib/cv"
+import { AIConfig } from "@/lib/ai/types"
 import {
     adaptCVWithAI,
     enhanceExperienceWithAI,
@@ -21,17 +22,20 @@ const json = (data: unknown, init?: ResponseInit) =>
   })
 
 export async function POST(request: Request) {
-  if (!isGenAIConfigured()) {
-    return json({ error: "AI service is not configured." }, { status: 503 })
-  }
-
-  try {
-    const { action, payload } = (await request.json()) as {
+    const { action, payload, config } = (await request.json()) as {
       action?: string
       payload?: Record<string, unknown>
+      config?: AIConfig
     }
 
-    switch (action) {
+    // Check if AI is configured (either via env vars or custom config)
+    const hasCustomConfig = config?.apiKey && config.provider
+    if (!isGenAIConfigured() && !hasCustomConfig) {
+      return json({ error: "AI service is not configured." }, { status: 503 })
+    }
+
+    try {
+      switch (action) {
       case "enhance-summary": {
         const summary = typeof payload?.summary === "string" ? payload.summary : undefined
         const context = typeof payload?.context === "string" ? payload.context : undefined
@@ -40,7 +44,7 @@ export async function POST(request: Request) {
           return json({ error: "Summary is required." }, { status: 400 })
         }
 
-        const enhanced = await enhanceSummaryWithAI(summary, context)
+        const enhanced = await enhanceSummaryWithAI(summary, context, config)
         return json({ summary: enhanced })
       }
 
@@ -52,7 +56,7 @@ export async function POST(request: Request) {
         const experience = experienceSchema.parse(payload.experience)
         const jobDescription = typeof payload.jobDescription === "string" ? payload.jobDescription : undefined
 
-        const enhanced = await enhanceExperienceWithAI(experience, jobDescription)
+        const enhanced = await enhanceExperienceWithAI(experience, jobDescription, [], config)
         return json({ experience: enhanced })
       }
 
@@ -62,7 +66,7 @@ export async function POST(request: Request) {
         }
 
         const cv = cvSchema.parse(payload.cv)
-        const adapted = await adaptCVWithAI(cv, payload.jobDescription)
+        const adapted = await adaptCVWithAI(cv, payload.jobDescription, config)
         return json({ cv: adapted })
       }
 
@@ -74,7 +78,7 @@ export async function POST(request: Request) {
         }
 
         try {
-          const structured = await importCVWithAI(text)
+          const structured = await importCVWithAI(text, config)
           return json({ cv: structured })
         } catch (error) {
           console.error("/api/ai import-cv error", error)
@@ -89,7 +93,7 @@ export async function POST(request: Request) {
 
         try {
           const cv = cvSchema.parse(payload.cv)
-          const optimized = await optimizeCVForATS(cv)
+          const optimized = await optimizeCVForATS(cv, config)
           return json({ cv: optimized })
         } catch (error) {
           console.error("/api/ai optimize-ats error", error)
@@ -105,7 +109,7 @@ export async function POST(request: Request) {
         try {
           const cv = cvSchema.parse(payload.cv)
           const language = payload.language === "fr" ? "fr" : "en"
-          const letter = await generateMotivationLetterWithAI(cv, payload.jobPosition, language)
+          const letter = await generateMotivationLetterWithAI(cv, payload.jobPosition, language, config)
           return json({ letter })
         } catch (error) {
           console.error("/api/ai generate-motivation-letter error", error)
@@ -121,7 +125,7 @@ export async function POST(request: Request) {
         try {
           const cv = cvSchema.parse(payload.cv)
           const { suggestInternshipSubjects } = await import("@/lib/ai/gemini/internship-analyzer")
-          const analysis = await suggestInternshipSubjects(payload.internshipText, cv)
+          const analysis = await suggestInternshipSubjects(payload.internshipText, cv, config)
           return json(analysis)
         } catch (error) {
           console.error("/api/ai analyze-internship error", error)
@@ -142,7 +146,8 @@ export async function POST(request: Request) {
             payload.internshipText, 
             cv, 
             payload.selectedSubject,
-            language
+            language,
+            config
           )
           return json(emails)
         } catch (error) {

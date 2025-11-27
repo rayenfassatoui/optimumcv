@@ -1,7 +1,8 @@
-import { ensureClient, getTextModel } from "./client"
+import { generateText } from "../client"
+import { AIConfig } from "../types"
 import {
-    createInternshipSubjectSuggestionsPrompt,
-    createInternshipEmailGenerationPrompt
+  createInternshipSubjectSuggestionsPrompt,
+  createInternshipEmailGenerationPrompt
 } from "./prompt-templates"
 import type { CVData } from "@/lib/cv"
 
@@ -35,23 +36,13 @@ export type InternshipAnalysisResult = {
  */
 export const suggestInternshipSubjects = async (
   internshipText: string,
-  cvData: CVData
+  cvData: CVData,
+  config?: AIConfig
 ): Promise<InternshipAnalysisResponse> => {
-  const client = ensureClient()
   const prompt = createInternshipSubjectSuggestionsPrompt(internshipText, cvData)
 
   try {
-    const response = await client.models.generateContent({
-      model: getTextModel(),
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }],
-        },
-      ],
-    })
-
-    const text = typeof response.text === "string" ? response.text.trim() : ""
+    const text = await generateText(prompt, config)
 
     if (!text) {
       throw new Error("Empty response from AI")
@@ -113,23 +104,13 @@ export const generateInternshipEmails = async (
   internshipText: string,
   cvData: CVData,
   selectedSubject: string,
-  language: "en" | "fr" = "en"
+  language: "en" | "fr" = "en",
+  config?: AIConfig
 ): Promise<InternshipEmails> => {
-  const client = ensureClient()
   const prompt = createInternshipEmailGenerationPrompt(internshipText, cvData, selectedSubject, language)
 
   try {
-    const response = await client.models.generateContent({
-      model: getTextModel(),
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }],
-        },
-      ],
-    })
-
-    const text = typeof response.text === "string" ? response.text.trim() : ""
+    const text = await generateText(prompt, config)
 
     if (!text) {
       throw new Error("Empty response from AI")

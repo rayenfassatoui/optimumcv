@@ -1,8 +1,9 @@
 import { cvSchema, type CVData } from "@/lib/cv"
-import { generateText } from "./client"
+import { generateText } from "../client"
+import { AIConfig } from "../types"
 import {
-    createKeywordExtractionPrompt,
-    createSummaryAdaptationPrompt,
+  createKeywordExtractionPrompt,
+  createSummaryAdaptationPrompt,
 } from "./prompt-templates"
 import { enhanceExperienceWithAI } from "./cv-enhancer"
 import { extractKeywords, dedupe, mergeSkills } from "./text-utils"
@@ -12,11 +13,11 @@ import { extractKeywords, dedupe, mergeSkills } from "./text-utils"
  * @param jobDescription - The job posting text
  * @returns Array of extracted keywords
  */
-const suggestKeywords = async (jobDescription: string): Promise<string[]> => {
+const suggestKeywords = async (jobDescription: string, config?: AIConfig): Promise<string[]> => {
   const prompt = createKeywordExtractionPrompt(jobDescription)
 
   try {
-    const response = await generateText(prompt)
+    const response = await generateText(prompt, config)
 
     const extracted = response
       .split(/[,\n;]/)
@@ -38,18 +39,19 @@ const suggestKeywords = async (jobDescription: string): Promise<string[]> => {
  */
 export const adaptCVWithAI = async (
   cvInput: CVData,
-  jobDescription: string
+  jobDescription: string,
+  config?: AIConfig
 ): Promise<CVData> => {
   const cv = cvSchema.parse(cvInput)
 
   // Extract all relevant keywords and technologies from job description
-  const keywords = await suggestKeywords(jobDescription)
+  const keywords = await suggestKeywords(jobDescription, config)
 
   // Enhance summary to be laser-focused on the job
   let summary = cv.personal.summary
   try {
     const summaryPrompt = createSummaryAdaptationPrompt(cv.personal.summary, keywords)
-    summary = (await generateText(summaryPrompt)) || cv.personal.summary
+    summary = (await generateText(summaryPrompt, config)) || cv.personal.summary
   } catch (error) {
     console.error("[CV Adapter] Summary enhancement failed:", error)
     summary = cv.personal.summary
@@ -59,7 +61,7 @@ export const adaptCVWithAI = async (
   const experience = await Promise.all(
     cv.experience.map(async (role) => {
       try {
-        return await enhanceExperienceWithAI(role, jobDescription, keywords)
+        return await enhanceExperienceWithAI(role, jobDescription, keywords, config)
       } catch (error) {
         console.error("[CV Adapter] Experience enhancement failed:", error)
         return role

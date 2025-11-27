@@ -10,6 +10,7 @@
   "dependencies": {
     "@google/genai": "^0.13.0",
     "@hookform/resolvers": "^5.2.2",
+    "@openrouter/sdk": "^0.1.27",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
     "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -49,6 +50,7 @@
     "motion": "^12.23.24",
     "next": "16.0.1",
     "next-themes": "^0.4.6",
+    "openai": "^6.9.1",
     "pdfjs-dist": "^5.4.394",
     "react": "19.2.0",
     "react-day-picker": "^9.11.1",

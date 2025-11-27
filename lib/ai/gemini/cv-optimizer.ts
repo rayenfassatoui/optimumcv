@@ -1,5 +1,6 @@
 import { cvSchema, type CVData } from "@/lib/cv"
-import { generateText } from "./client"
+import { generateText } from "../client"
+import { AIConfig } from "../types"
 import { createATSOptimizationPrompt } from "./prompt-templates"
 import { extractJsonObject } from "./text-utils"
 
@@ -25,11 +26,11 @@ const sanitizeCVData = (data: any): any => {
  * @returns ATS-optimized CV
  * @throws Error if optimization fails
  */
-export const optimizeCVForATS = async (cv: CVData): Promise<CVData> => {
+export const optimizeCVForATS = async (cv: CVData, config?: AIConfig): Promise<CVData> => {
   const prompt = createATSOptimizationPrompt(cv)
 
   try {
-    const response = await generateText(prompt)
+    const response = await generateText(prompt, config)
 
     // Extract JSON from response (handle markdown code blocks)
     const jsonStr = extractJsonObject(response)

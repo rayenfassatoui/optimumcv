@@ -1,8 +1,9 @@
 import { experienceSchema, type ExperienceItem } from "@/lib/cv"
-import { generateText } from "./client"
+import { generateText } from "../client"
+import { AIConfig } from "../types"
 import {
-    createSummaryEnhancementPrompt,
-    createExperienceEnhancementPrompt,
+  createSummaryEnhancementPrompt,
+  createExperienceEnhancementPrompt,
 } from "./prompt-templates"
 import { sanitizeBullet, extractKeywords, titleCase } from "./text-utils"
 
@@ -42,7 +43,8 @@ const applyKeywordsToExperience = (
  */
 export const enhanceSummaryWithAI = async (
   summary: string,
-  context?: string
+  context?: string,
+  config?: AIConfig
 ): Promise<string> => {
   const trimmed = summary.trim()
   if (!trimmed) {
@@ -50,7 +52,7 @@ export const enhanceSummaryWithAI = async (
   }
 
   const prompt = createSummaryEnhancementPrompt(trimmed, context)
-  const enhanced = await generateText(prompt)
+  const enhanced = await generateText(prompt, config)
   return enhanced || trimmed
 }
 
@@ -64,7 +66,8 @@ export const enhanceSummaryWithAI = async (
 export const enhanceExperienceWithAI = async (
   experienceInput: ExperienceItem,
   jobDescription?: string,
-  seededKeywords: string[] = []
+  seededKeywords: string[] = [],
+  config?: AIConfig
 ): Promise<ExperienceItem> => {
   const experience = experienceSchema.parse(experienceInput)
   const keywords = seededKeywords.length
@@ -76,7 +79,7 @@ export const enhanceExperienceWithAI = async (
   const prompt = createExperienceEnhancementPrompt(experience, jobDescription)
 
   try {
-    const response = await generateText(prompt)
+    const response = await generateText(prompt, config)
     const suggestions = response
       .split(/\n+/)
       .map((value: string) => sanitizeBullet(value))

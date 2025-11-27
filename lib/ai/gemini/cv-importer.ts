@@ -1,5 +1,6 @@
 import { cvSchema, defaultCV, type CVData } from "@/lib/cv"
-import { generateText } from "./client"
+import { generateText } from "../client"
+import { AIConfig } from "../types"
 import { createCVImportPrompt } from "./prompt-templates"
 import { extractJsonObject } from "./text-utils"
 
@@ -55,7 +56,7 @@ const sanitizePersonalData = (data: Record<string, unknown>) => {
  * @returns Structured CV data
  * @throws Error if parsing fails
  */
-export const importCVWithAI = async (resumeText: string): Promise<CVData> => {
+export const importCVWithAI = async (resumeText: string, config?: AIConfig): Promise<CVData> => {
   const trimmed = resumeText.trim()
   if (!trimmed) {
     throw new Error("Resume content is empty")
@@ -65,7 +66,7 @@ export const importCVWithAI = async (resumeText: string): Promise<CVData> => {
   console.log("[CV Importer] Processing resume, first 500 chars:", trimmed.slice(0, 500))
 
   const prompt = createCVImportPrompt(trimmed)
-  const response = await generateText(prompt)
+  const response = await generateText(prompt, config)
 
   console.log("[CV Importer] Raw AI response length:", response.length)
   console.log("[CV Importer] First 500 chars of response:", response.slice(0, 500))

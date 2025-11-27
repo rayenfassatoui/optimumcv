@@ -35,7 +35,7 @@ export const isGenAIConfigured = (): boolean => {
  * @param prompt - The prompt to send to the AI
  * @returns The generated text
  */
-export const generateText = async (prompt: string): Promise<string> => {
+export const generateTextWithGemini = async (prompt: string): Promise<string> => {
   const response = await ensureClient().models.generateContent({
     model: TEXT_MODEL,
     contents: [{ role: "user", parts: [{ text: prompt }] }],
