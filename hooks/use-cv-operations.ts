@@ -6,6 +6,7 @@ import {
     mockOptimizeCVForATS,
 } from "@/lib/ai/mock"
 import type { CVData, ExperienceItem } from "@/lib/cv"
+import { useAIConfig } from "@/contexts/ai-config-context"
 
 type AIResult<TData> = {
   data?: TData
@@ -22,6 +23,14 @@ export function useCVOperations(
   setExperienceLoading: (value: string | null) => void,
   setIsAdapting: (value: boolean) => void,
 ) {
+  const { config } = useAIConfig()
+
+  const getAIProviderName = () => {
+    if (config?.provider === "openrouter") {
+      return config.model || "OpenRouter"
+    }
+    return "Gemini"
+  }
   const handleSummaryEnhance = async () => {
     const toastId = toast.loading("Optimizing your CV for ATS (Applicant Tracking Systems)...")
     
@@ -45,7 +54,7 @@ export function useCVOperations(
       toast.success(
         usedFallback 
           ? "CV optimized for ATS (fallback mode) - Added action verbs, keywords, and metrics!" 
-          : "CV optimized for ATS with Gemini - Now ATS-friendly with strong keywords and impact statements!",
+          : `CV optimized for ATS with ${getAIProviderName()} - Now ATS-friendly with strong keywords and impact statements!`,
         { id: toastId }
       )
       if (usedFallback && aiError) {
@@ -76,7 +85,7 @@ export function useCVOperations(
       }
 
       form.setValue(`experience.${index}`, enhanced, { shouldDirty: true })
-      toast.success(usedFallback ? "Experience bullets refreshed (fallback mode)." : "Experience bullets refreshed with Gemini.")
+      toast.success(usedFallback ? "Experience bullets refreshed (fallback mode)." : `Experience bullets refreshed with ${getAIProviderName()}.`)
       if (usedFallback && aiError) {
         toast.info(aiError)
       }
@@ -110,7 +119,7 @@ export function useCVOperations(
       }
 
       form.reset(adapted)
-      toast.success(usedFallback ? "CV aligned using fallback AI." : "CV aligned with Gemini insights.")
+      toast.success(usedFallback ? "CV aligned using fallback AI." : `CV aligned with ${getAIProviderName()} insights.`)
       if (usedFallback && aiError) {
         toast.info(aiError)
       }

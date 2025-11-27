@@ -3,6 +3,7 @@ import { toast } from "sonner"
 import { UseFormReturn } from "react-hook-form"
 import { mockImportCV, type MockImportResult } from "@/lib/ai/mock"
 import type { CVData } from "@/lib/cv"
+import { useAIConfig } from "@/contexts/ai-config-context"
 
 type AIResult<TData> = {
   data?: TData
@@ -20,6 +21,14 @@ export function useImportOperations(
   const [rawImport, setRawImport] = useState("")
   const [isImporting, setIsImporting] = useState(false)
   const resumeInputRef = useRef<HTMLInputElement>(null) as RefObject<HTMLInputElement>
+  const { config } = useAIConfig()
+
+  const getAIProviderName = () => {
+    if (config?.provider === "openrouter") {
+      return config.model || "OpenRouter"
+    }
+    return "Gemini"
+  }
 
   const handleImportCV = async ({ file }: { file?: File | null } = {}) => {
     const sourceFile = file ?? resumeFile
@@ -62,13 +71,13 @@ export function useImportOperations(
         return
       }
 
-      const loadingId = toast.loading("Structuring resume with Gemini…")
+      const loadingId = toast.loading(`Structuring resume with ${getAIProviderName()}…`)
       const aiResult = await requestAI<{ cv: CVData }>("import-cv", { text: aiSource })
       toast.dismiss(loadingId)
 
       if (aiResult.data?.cv) {
         form.reset(aiResult.data.cv)
-        toast.success("CV imported with Gemini.")
+        toast.success(`CV imported with ${getAIProviderName()}.`)
         if (aiResult.error) {
           toast.info(aiResult.error)
         }

@@ -38,11 +38,17 @@ export function AIConfigProvider({ children }: { children: React.ReactNode }) {
 
     const ensureConfig = useCallback((): Promise<AIConfig | undefined> => {
         return new Promise((resolve) => {
+            // If already configured, return immediately
+            if (config) {
+                resolve(config)
+                return
+            }
+
             const hasSeen = localStorage.getItem("has_seen_ai_config")
 
-            // If user has already configured or dismissed, resolve immediately
+            // If user has already seen/dismissed the modal, resolve with undefined
             if (hasSeen) {
-                resolve(config)
+                resolve(undefined)
                 return
             }
 
@@ -64,9 +70,9 @@ export function AIConfigProvider({ children }: { children: React.ReactNode }) {
     const handleOpenChange = (open: boolean) => {
         setIsModalOpen(open)
         if (!open && pendingResolve) {
-            // If closed without saving, mark as seen and resolve with current config
+            // If closed without saving, mark as seen and resolve with undefined
             localStorage.setItem("has_seen_ai_config", "true")
-            pendingResolve(config)
+            pendingResolve(undefined)
             setPendingResolve(null)
         }
     }

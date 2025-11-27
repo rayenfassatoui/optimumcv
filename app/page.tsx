@@ -1,13 +1,19 @@
 import { CVBuilder } from "@/components/cv/cv-builder"
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 import { Button } from "@/components/ui/button"
-import { Github } from "lucide-react"
+import { Github, Settings } from "lucide-react"
 import Link from "next/link"
 
 export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <nav className="sticky top-0 z-50 flex items-center justify-end gap-2 border-b bg-background/95 px-6 py-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 sm:px-10 lg:px-20">
+        <Button variant="ghost" size="icon" asChild>
+          <Link href="/settings">
+            <Settings className="h-5 w-5" />
+            <span className="sr-only">Settings</span>
+          </Link>
+        </Button>
         <Button variant="ghost" size="icon" asChild>
           <a href="https://github.com/rayenfassatoui/optimumcv" target="_blank" rel="noopener noreferrer">
             <Github className="h-5 w-5" />
@@ -30,24 +36,24 @@ export default function Home() {
         </header>
         <CVBuilder />
       </main>
-      
-{/* foote */}
+
+      {/* foote */}
       <footer className="border-t bg-background py-6">
         <div className="mx-auto max-w-[1440px] px-6 text-center text-sm text-muted-foreground sm:px-10 lg:px-20">
           <p>
             Built by{" "}
-            <Link 
-              href="https://www.rayenft.dev/" 
-              target="_blank" 
+            <Link
+              href="https://www.rayenft.dev/"
+              target="_blank"
               rel="noopener noreferrer"
               className="font-medium underline underline-offset-4 hover:text-primary"
             >
               rayenft.dev
             </Link>
             {" "}and{" "}
-            <Link 
-              href="https://ashref.tn/" 
-              target="_blank" 
+            <Link
+              href="https://ashref.tn/"
+              target="_blank"
               rel="noopener noreferrer"
               className="font-medium underline underline-offset-4 hover:text-primary"
             >
