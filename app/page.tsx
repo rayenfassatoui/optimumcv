@@ -31,7 +31,7 @@ export default function Home() {
         <CVBuilder />
       </main>
       
-{/* footer */}
+{/* foote */}
       <footer className="border-t bg-background py-6">
         <div className="mx-auto max-w-[1440px] px-6 text-center text-sm text-muted-foreground sm:px-10 lg:px-20">
           <p>
