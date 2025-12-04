@@ -20,7 +20,7 @@ export default function SettingsPage() {
     const handleSave = () => {
         setConfig({
             provider,
-            apiKey: provider === "openrouter" ? apiKey : undefined,
+            apiKey: apiKey || undefined,
             model: provider === "openrouter" ? model : undefined,
         })
         toast.success("AI configuration saved successfully!")
@@ -56,7 +56,13 @@ export default function SettingsPage() {
                         <CardContent className="space-y-6">
                             <div className="space-y-2">
                                 <Label htmlFor="provider">Provider</Label>
-                                <Select value={provider} onValueChange={(v: "gemini" | "openrouter") => setProvider(v)}>
+                                <Select
+                                    value={provider}
+                                    onValueChange={(v: "gemini" | "openrouter") => {
+                                        setProvider(v)
+                                        setApiKey("") // Clear API key when switching provider
+                                    }}
+                                >
                                     <SelectTrigger id="provider">
                                         <SelectValue placeholder="Select provider" />
                                     </SelectTrigger>
@@ -66,9 +72,27 @@ export default function SettingsPage() {
                                     </SelectContent>
                                 </Select>
                                 {provider === "gemini" && (
-                                    <p className="text-sm text-muted-foreground">
-                                        Using server-configured Gemini API. No additional configuration needed.
-                                    </p>
+                                    <div className="mt-4 space-y-2">
+                                        <Label htmlFor="geminiApiKey">Gemini API Key (Optional)</Label>
+                                        <Input
+                                            id="geminiApiKey"
+                                            value={apiKey}
+                                            onChange={(e) => setApiKey(e.target.value)}
+                                            placeholder="Leave empty to use server default"
+                                            type="password"
+                                        />
+                                        <p className="text-sm text-muted-foreground">
+                                            Get your API key from{" "}
+                                            <a
+                                                href="https://aistudio.google.com/app/apikey"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-primary underline"
+                                            >
+                                                Google AI Studio
+                                            </a>
+                                        </p>
+                                    </div>
                                 )}
                             </div>
 

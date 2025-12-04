@@ -17,5 +17,5 @@ export const generateText = async (
   }
 
   // Default to Gemini
-  return generateTextWithGemini(prompt)
+  return generateTextWithGemini(prompt, config)
 }

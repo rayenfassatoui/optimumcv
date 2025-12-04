@@ -10,14 +10,25 @@ let client: GoogleGenAI | null = null
  * Ensure the Google Gemini AI client is initialized
  * @throws Error if GOOGLE_GENAI_API_KEY is not configured
  */
-export const ensureClient = (): GoogleGenAI => {
-  const apiKey = process.env.GOOGLE_GENAI_API_KEY
-  if (!apiKey) {
+/**
+ * Ensure the Google Gemini AI client is initialized
+ * @param apiKey - Optional API key to use instead of the environment variable
+ * @throws Error if API key is not configured
+ */
+export const ensureClient = (apiKey?: string): GoogleGenAI => {
+  const key = apiKey || process.env.GOOGLE_GENAI_API_KEY
+  if (!key) {
     throw new Error("GOOGLE_GENAI_API_KEY is not configured")
   }
 
+  // If a custom key is provided, always create a new client
+  if (apiKey) {
+    return new GoogleGenAI({ apiKey })
+  }
+
+  // Otherwise use the singleton client for the env var
   if (!client) {
-    client = new GoogleGenAI({ apiKey })
+    client = new GoogleGenAI({ apiKey: key })
   }
 
   return client
@@ -33,10 +44,13 @@ export const isGenAIConfigured = (): boolean => {
 /**
  * Generate text using Google Gemini AI
  * @param prompt - The prompt to send to the AI
+ * @param config - Optional configuration containing API key
  * @returns The generated text
  */
-export const generateTextWithGemini = async (prompt: string): Promise<string> => {
-  const response = await ensureClient().models.generateContent({
+export const generateTextWithGemini = async (prompt: string, config?: { apiKey?: string }): Promise<string> => {
+  const client = ensureClient(config?.apiKey)
+
+  const response = await client.models.generateContent({
     model: TEXT_MODEL,
     contents: [{ role: "user", parts: [{ text: prompt }] }],
   })
